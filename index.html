@@ -1,340 +1,10 @@
 <html>
- 	<head>
- 	<meta charset="UTF-8">
- 	 
- 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,minimum-scale=1,user-scalable=no">
- 	<meta name="apple-mobile-web-app-capable" content="yes">
- 	<meta name="apple-mobile-web-app-status-bar-style" >
- 	 
- 	<title>PageSlider Demo</title>
- 	<style>
- 	
- 	 
- 	.pages{
- 	width: 100%;
- 	height: 100%;
- 	position: relative;
- 	 
- 	}
- 	.page {
- 	font-size:18px;
- 	position: absolute;
- 	top: 0;
- 	left: 0;
- 	width: 100%;
- 	height: 100%;
- 	overflow: hidden;
- 	transform: translate3d(0px, 100%, 0px);
- 	-webkit-transform: translate3d(0px, 100%, 0px);
- 	-moz-transform: translate3d(0px, 100%, 0px);
- 	transition: transform .5s ease-out;
- 	-webkit-transition: -webkit-transform .5s ease-out;
- 	-moz-transition: -moz-transform .5s ease-out;
- 	}
- 	.page1{background: deeppink;}
- 	.page2{background: deepskyblue;}
- 	.page3{background: orangered;}
- 	 
- 	/* the box animation */
- 	.box{
- 	width:100px ;
- 	height:100px;
-
- 	}
- 	.play .myAnimation{
- 	animation:move 1s ease 1 both ;
- 	-webkit-animation: move 1s ease 1 both ;
- 	}
- 	@-webkit-keyframes move{
- 	100%{
- 	-webkit-transform:translate3d(150px,0,0);
- 	transform:translate3d(150px,0,0);
- 	-ms-transform: translate3d(150px,0,0);
- 	}
- 	}
- 	</style>
- 	</head>
- 	 
- 	<body ondragstart="window.event.returnValue=false" oncontextmenu="window.event.returnValue=false" onselectstart="event.returnValue=false">
-
- 	 
- 	<div class="pages">
- 	<div class = "page page1">ε(*´･ω･)з小卓子，生日快乐鸭</div>
- 	<div class = "page page2">这一年，故事简单<br />
-							遇见的你，刚好喜欢<br />
-							知道吗？<br />
-							这世上美好的东西太多了<br />
-							音乐美酒美食占一半<br />
-							剩下的一半<br />
-							我希望是你<br />
-							<div class="box myAnimation"></div></div>
- 	<div class = "page page3">其实，一直以来～<br />
-我一个人很好，但你来了,我觉得更好。<br />既独立又亲密，彼此了解、彼此尊重，<br />相处不累，舒心自在 (*˘︶˘*)<br /><br /><br />
- 	最后，想告诉你的是:<br /><br />
-我要两颗西柚！！！<br />
- 	</div>
-
- 	</div>
- 	
- 	 
- 	</body>
- 	<script>
- 	// PageSlide接收三个参数:页面元素,要设定的滑动方向,可选的扩展函数
- 	var PageSlide = function(el, swipe, options) {
- 	this.options = options || {} //可选函数
- 	this.current = 0 //当前页面索引
- 	this.pageX //横向的手指落点
- 	this.pageY //纵向的手指落点
- 	this.height //设备高度
- 	this.width //设备宽度
- 	this.flag //判断滑动方向的变量
- 	this.move //滑动的距离
- 	 
- 	this.$el = el //当前页面的对象
- 	this.swipe = swipe || 'X' //滑动方向参数
- 	this.resize().init().bindEvents() //初始化
- 	}
- 	 
- 	 
- 	PageSlide.prototype.init = function(i) {
- 	var current = i ? this.$el.children[i] : this.$el.firstElementChild
- 	if (!current) throw 'ERROR';
- 	//moving类名作为当前滑动页面的标记,也在样式中作滑动的扩展效果
- 	current.classList.add('moving')
- 	current.style.webkitTransform = 'translate3d(0,0,0)'
- 	//以swipe的值预设置其他页面的宽高，获得流畅的交互效果
- 	for(var i = 1; i <this.$el.children.length ; i++){
- 	this['set' + this.swipe](this.$el.children[i], (this.swipe === 'X' ? this.width : this.height))
- 	}
- 	setTimeout(function() {
- 	current.classList.remove('moving')
- 	current.classList.add('play')
- 	}, 3e2)
- 	return this
- 	}
- 	 
- 	//为页面绑定各种事件的绑定函数
- 	PageSlide.prototype.bindEvents = function() {
- 	var self = this
- 	 
- 	window.addEventListener('resize orientationchange', this.resize.bind(this), false)
- 	 
- 	'touchstart touchmove touchend touchcancel'.split(' ').forEach(function(evn) {
- 	//将四个触控函数（申明在后面）绑定到每个页面
- 	self.$el.addEventListener(evn, self[evn].bind(self), false)
- 	})
- 	}
- 	//获得当前触控的页面对象
- 	PageSlide.prototype.getCurrent = function() {
- 	return this.$el.children[this.current]
- 	}
- 	//初始化时获得设备的宽高
- 	PageSlide.prototype.resize = function() {
- 	this.width = this.$el.parentNode.clientWidth
- 	this.height = this.$el.parentNode.clientHeight
- 	return this
- 	}
- 	//到达任意页面的random()方法
- 	PageSlide.prototype.random = function() {
- 	var count = this.$el.children.length
- 	var current = this.current
- 	var arr = []
- 	var num
- 	 
- 	for (var i = 0; i < count; i++) {
- 	if (i !== current) arr.push(i.toString())
- 	}
- 	 
- 	num = Math.floor(Math.random() * arr.length)
- 	this.direct(+arr[num])
- 	}
- 	// 四个内建的滑动事件函数,与前面绑定函数相呼应
- 	PageSlide.prototype.touchstart = function(e) {
- 	var touches = e.touches[0]
- 	 
- 	//触控开始
- 	this.flag = null
- 	this.move = 0
- 	 
- 	//记录落点
- 	this.pageX = touches.pageX
- 	this.pageY = touches.pageY
- 	}
- 	 
- 	PageSlide.prototype.touchmove = function(e) {
- 	var touches = e.touches[0]
- 	var X = touches.pageX - this.pageX
- 	var Y = touches.pageY - this.pageY
- 	var current = this.getCurrent()
- 	var next = current.nextElementSibling
- 	var prev = current.previousElementSibling
- 	 
- 	//添加移动样式
- 	if (!this.flag) {
- 	this.flag = Math.abs(X) > Math.abs(Y) ? 'X' : 'Y'
- 	 
- 	if (this.flag === this.swipe) {
- 	current.classList.add('moving')
- 	next && next.classList.add('moving')
- 	prev && prev.classList.add('moving')
- 	}
- 	}
- 	 
- 	if (this.flag === this.swipe) {
- 	e.preventDefault()
- 	e.stopPropagation()
- 	 
- 	switch (this.swipe) {
- 	case 'X':
- 	//swipe horizontal
- 	this.move = X
- 	 
- 	this.setX(current, X)
- 	next && (this.setX(next, X + this.width))
- 	prev && (this.setX(prev, X - this.width))
- 	break;
- 	case 'Y':
- 	//swipe vertical
- 	this.move = Y
- 	 
- 	this.setY(current, Y)
- 	next && (this.setY(next, Y + this.height))
- 	prev && (this.setY(prev, Y - this.height))
- 	break;
- 	}
- 	}
- 	}
- 	 
- 	PageSlide.prototype.touchend = function(e) {
- 	var minRange = 50
- 	var move = this.move
- 	var current = this.getCurrent()
- 	var next = current.nextElementSibling
- 	var prev = current.previousElementSibling
- 	 
- 	current.classList.remove('moving')
- 	next && next.classList.remove('moving')
- 	prev && prev.classList.remove('moving')
- 	if (!this.flag) return
- 	 
- 	e.preventDefault()
- 	//滑动结束前往下一页面,next()方法调用了go()方法
- 	if (move < -minRange && next) return this.next()
- 	if (move > minRange && prev) return this.prev()
- 	this.reset()
- 	}
- 	 
- 	PageSlide.prototype.touchcancel = function(e) {
- 	var current = this.getCurrent()
- 	var next = current.nextElementSibling
- 	var prev = current.previousElementSibling
- 	 
- 	current.classList.remove('moving')
- 	next && next.classList.remove('moving')
- 	prev && prev.classList.remove('moving')
- 	this.reset()
- 	}
- 	 
- 	//动态设定translate3d参数方法
- 	PageSlide.prototype.setX = function(el, x, unit) {
- 	el && (el.style.webkitTransform = 'translate3d(' + x + (unit || 'px') + ',0,0)')
- 	}
- 	 
- 	PageSlide.prototype.setY = function(el, y, unit) {
- 	el && (el.style.webkitTransform = 'translate3d(0,' + y + (unit || 'px') + ',0)')
- 	}
- 	//设置当前触控页面translate3d参数为0的方法
- 	PageSlide.prototype.setCurrent = function(el, i) {
- 	el && (el.style.webkitTransform = 'translate3d(0,0,0)')
- 	 
- 	if (i) {
- 	this.current = i
- 	this.$current = this.$el.children[i]
- 	}
- 	 
- 	}
- 	//调用go()方法前往下一或上一页面
- 	PageSlide.prototype.next = function() {
- 	this.go(this.current + 1)
- 	}
- 	 
- 	PageSlide.prototype.prev = function() {
- 	this.go(this.current - 1)
- 	}
- 	//重置方法,用于初始化以及当前页面的重置
- 	PageSlide.prototype.reset = function() {
- 	var width = this.width
- 	var height = this.height
- 	var swipe = this.swipe
- 	var current = this.getCurrent()
- 	var prev = current.previousElementSibling
- 	var next = current.nextElementSibling
- 	 
- 	this.setCurrent(current)
- 	prev && (this['set' + swipe](prev, -(swipe === 'X' ? width : height)))
- 	next && (this['set' + swipe](next, swipe === 'X' ? width : height))
- 	}
- 	//去往下一或上一页面的go方法
- 	PageSlide.prototype.go = function(i) {
- 	var onFinish = this.options.onFinish
- 	var current = this.getCurrent()
- 	var total = this.$el.childElementCount
- 	var target = this.$el.children[i]
- 	var d = i < this.current ? -1 : 1
- 	 
- 	 
- 	if (i === this.current || i < 0 || i >= total) return
- 	if (onFinish && (typeof onFinish === 'function')) onFinish.call(this, i)
- 	// 滑动完成调用方法
- 	typeof this.options.tranSetionEnd ==='function' && this.options.tranSetionEnd.call(this)
- 	this.current = i
- 	 
- 	this['set' + this.swipe](current, -d * (this.swipe === 'X' ? this.width : this.height))
- 	this.setCurrent(target, i)
- 	this.finish(current, target)
- 	}
- 	//滑动完成后删除当前页面.play标记以及为下一页面添加.play标记
- 	PageSlide.prototype.finish = function(curr, target) {
- 	this.flag = null
- 	setTimeout(function() {
- 	curr && curr.classList.remove('play')
- 	target && target.classList.add('play')
- 	}, 3e2)
- 	}
- 	 
- 	//直达任意页面的方法
- 	//直达某一页面的方法, 因为有个项目的需要
- 	//写了这个方法,要从任意页面开始滑动依然能保持正常的滑动体验
- 	//就需要将直达页面的前面所有页面的translate3d参数都设置为(0,-height,0)
- 	PageSlide.prototype.direct = function(i){
- 	if(i&&typeof(i)==='number')
- 	{
- 	this.go(i)
- 	for(var j = 0; j< i ;j++) {
- 	this['set' + this.swipe](this.$el.children[j], -1 * (this.swipe === 'X' ? this.width : this.height))
- 	}
- 	}
- 	else return
- 	 
- 	 
- 	}
- 	// 传参
- 	document.addEventListener('touchmove', function(e) {
- 	e.preventDefault()
- 	
-})
-
-//控制是上下翻页还是左右翻页:Y,X
-
- 	var pages = new PageSlide(document.querySelector('.pages'), 'Y', {
- 	tranSetionEnd: function() {
- 	console.log(this.current);
- 	}
- 	})
- 	</script>
-<style>
-
-* {
+<head>
+	<meta charset="utf-8">
+	 <title>Chen Zhuo, I want to see you</title>
+	<style type="text/css"> 
+	
+	* {
 		margin: 0; 
 		padding: 0;
 		-webkit-box-sizing: border-box;
@@ -362,13 +32,13 @@
 	}
 	
 	h1 {
-		font: 3em 'Cinzel', serif;
+		font: 2.8em 'Cinzel', serif;
 		font-weight: 400;
 		letter-spacing: 0.35em;
 		text-shadow: 0 0 25px rgba(254,254,255,0.85);
 	}
 	h2 {
-		font: 2em 'Cinzel', serif;
+		font: 1.7em 'Cinzel', serif;
 		font-weight: 400;
 		letter-spacing: 0.5em;
 		text-shadow: 0 0 25px rgba(254,254,255,0.85);
@@ -475,8 +145,36 @@
 	font-weight: bold;
 }
     </style>
-	<style type="text/css">
+	
+		
+</head>
 
+<body ondragstart="window.event.returnValue=false" oncontextmenu="window.event.returnValue=false" onselectstart="event.returnValue=false">
+ 
+<div id="container">
+ 
+  <div>
+	<h1 id="h1" >ε(*´･ω･)з小卓子，生日快乐鸭</h1>
+	<h2>&nbsp;</h2>
+	  <h2 id="h2" >这一年，故事简单</br>
+遇见的你，刚好喜欢</br>
+知道吗？</br>
+这世上美好的东西太多了</br>音乐美酒美食占一半</br>剩下的一半♡我希望是你♡ </br>
+
+其实，一直以来～</br>
+我一个人很好，但你来了，我觉得更好</br>既独立又亲密，彼此了解</br>彼此尊重，相处不累，舒心自在 (*˘︶˘*)</br>
+🍹🍹🍹🍹🍹🍹🍹🍹🍹🍹🍹🍹🍹</br>
+最后，想告诉你的是:</br>
+我要两颗西柚！！！</br>
+
+
+</h2>
+
+  </div>
+ 
+ 
+</div>
+ 
  
 <canvas id="canvas"></canvas>
  
