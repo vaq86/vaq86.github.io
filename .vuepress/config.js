@@ -2,7 +2,7 @@ module.exports = {
   "base": "/",
   "title": "ChatGPT小站",
   "description": "网站提供了OpenAI的ChatGPT账号升级ChatGPT Plus指南,国内购买ChatGPT4,虚拟信用卡的使用,OnlyFans订阅教程等",
-  "dest": "/dist", // 博客部署时输出的文件夹
+  "dest": "dist", // 博客部署时输出的文件夹
   "host": "localhost",
   "port": "8888",
   "head": [
@@ -62,7 +62,7 @@ module.exports = {
       },
       {
         "text": "ChatGPT4升级方法",
-        "icon": "reco-message",
+        "icon": "reco-tongzhi",
         "link": "/blogs/chatgpt/upgrade-chatgptplus.html"
 
       },
@@ -74,7 +74,7 @@ module.exports = {
       },
       {
         "text": "WildCard",
-        "icon": "reco-coding",
+        "icon": "reco-api",
         "link": "https://bewildcard.com/i/HOME"
 
       },
