@@ -289,7 +289,7 @@ module.exports = {
         btnText: '',//关于
         linkTo: '/'
       },
-      closeOnce: false
+      closeOnce: true
     }]
 
   ],
